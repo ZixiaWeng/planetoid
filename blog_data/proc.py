@@ -1,56 +1,53 @@
 import numpy as np
+from scipy import sparse
+import random
 
-def blog():
-    with open('blog_adj_directed.csv') as fin, open('blog_adj_undirected.txt', 'w') as fout:
-        for line in fin:
-            ls = line.rstrip().split(',')
-            print '@@@',ls
-            assert(len(ls)==2)
-            id0 = int(ls[0]) -1
-            id1 = int(ls[1]) -1
-            line = line.replace(",", "\t")
-            line = line + '\t1'
-            fout.write('%s\t%s\n' % (id0, id1))
-            fout.write('%s\t%s\n' % (id1, id0))
-            # print ('(%s, %s)\t%s\n' % (id0, id1, '1.0'))
+def save_sparse_csr(filename, array):
+    np.savez(filename,data = array.data ,indices=array.indices,
+             indptr =array.indptr, shape=array.shape )
 
-def blogx():
-    with open('blog_adj_directed.csv') as fin, open('train.blog.x', 'w') as fout:
-        for line in fin:
-            ls = line.rstrip().split(',')
-            print '@@@',ls
-            assert(len(ls)==2)
-            id0 = int(ls[0]) -1
-            id1 = int(ls[1]) -1
-            line = line.replace(",", "\t")
-            line = line + '\t1'
-            fout.write('(%s, %s)\t%s\n' % (id0, id1, '1.0'))
-            fout.write('(%s, %s)\t%s\n' % (id1, id0, '1.0'))
-            # print ('(%s, %s)\t%s\n' % (id0, id1, '1.0'))
+def xblog():
+    data = np.zeros((10312, 10312))
+    m,n = data.shape
+    for i in range(m):
+        data[i][i] = 1
+    # list(range(0, 10312)) #[0,1,2...10311]
+    np.random.shuffle(data)
+    # print data
+    # index = list(range(0, 10312)) 
+    # final =[]
+    # for i in range(10312):
+    #     final.append([index[i],data[i]])
+    # final = np.array(final)
+    # final = sparse.csr_matrix(final)
+    # print final,final.shape
+    # data = random.sample(data,10312/10)
+    x = data[:int(10312*0.1)]
+    vx = data[int(10312*0.1):int(10312*0.2)]
+    tx = data[int(10312*0.2):]
+    xData = sparse.csr_matrix(x)
+    txData =sparse.csr_matrix(tx)
+    print xData, xData.shape
+    print txData, txData.shape
+    save_sparse_csr('trans.blog.x', xData)
+    save_sparse_csr('trans.blog.tx', txData)
+
+    # xData.tofile('trans.blog.x')
+    # txData.tofile('trans.blog.tx')
+    # sData.save
 
 def blogy():
     blog = np.load('blog_labels.npy')
-    blog.tofile('train.blog.y')
+    random.shuffle(blog)
+    yblog = blog[:int(10312*0.1)]
+    vy = blog[int(10312*0.1):int(10312*0.2)]
+    tyBlog = blog[int(10312*0.2):]
+    np.save('trans.blog.y',yblog)
+    np.save('trans.blog.ty',tyBlog)
+    # yblog.tofile('train.blog.y')
+    # tyBlog.tofile('train.blog.ty')
 
-  #   with open('blog_labels.npy') as fin, open('train.blog.y', 'w') as fout:
-		# row = 0 
-  #       num_rows, num_cols = blog.shape
-  #       x = 0
-  #       print('$$$$',num_rows)
-  #       for row in range(num_rows):
-  #           col = 0
-  #           for i in blog[row]:
-  #               if i != 0:
-  #                   line = str(row) +','+str(col)
-  #                   if col > x:
-  #                       x = col
-  #                   # print line
-  #                   #fout.write(line)
-  #                   # fout.write('%s\t%s\n' % (row,col))
-  #               else:
-  #                   col+=1
-
-    print blog,'hahahahah'
+    print blog,'hahahahah', blog.shape
 
 def graph():
     graph = {}
@@ -64,5 +61,6 @@ def graph():
                 graph[int(ls[0])] = []
         print graph
     np.save('train.blog.graph',graph)
-# blogy()
-graph()
+
+blogy()
+# graph()
