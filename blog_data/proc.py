@@ -1,17 +1,17 @@
 import numpy as np
 from scipy import sparse
 import random
+import scipy.sparse
 
 def save_sparse_csr(filename, array):
     np.savez(filename,data = array.data ,indices=array.indices,
              indptr =array.indptr, shape=array.shape )
 
-def xblog():
+def blogx():
     data = np.zeros((10312, 10312))
     m,n = data.shape
     for i in range(m):
         data[i][i] = 1
-    # list(range(0, 10312)) #[0,1,2...10311]
     np.random.shuffle(data)
     # print data
     # index = list(range(0, 10312)) 
@@ -29,12 +29,13 @@ def xblog():
     txData =sparse.csr_matrix(tx)
     print xData, xData.shape
     print txData, txData.shape
-    save_sparse_csr('trans.blog.x', xData)
-    save_sparse_csr('trans.blog.tx', txData)
+    # scipy.sparse.save_npz('trans.blog.x', xData)
+    # scipy.sparse.save_npz('trans.blog.tx', txData)
+    np.save('trans.blog.x', xData)
+    np.save('trans.blog.tx', txData)
+    # save_sparse_csr('trans.blog.x', xData)
+    # save_sparse_csr('trans.blog.tx', txData)
 
-    # xData.tofile('trans.blog.x')
-    # txData.tofile('trans.blog.tx')
-    # sData.save
 
 def blogy():
     blog = np.load('blog_labels.npy')
@@ -42,10 +43,13 @@ def blogy():
     yblog = blog[:int(10312*0.1)]
     vy = blog[int(10312*0.1):int(10312*0.2)]
     tyBlog = blog[int(10312*0.2):]
+    yblog = sparse.csr_matrix(yblog)
+    tyBlog =sparse.csr_matrix(tyBlog)
+    # scipy.sparse.save_npz('trans.blog.y',yblog)
+    # scipy.sparse.save_npz('trans.blog.ty',tyBlog)
     np.save('trans.blog.y',yblog)
     np.save('trans.blog.ty',tyBlog)
-    # yblog.tofile('train.blog.y')
-    # tyBlog.tofile('train.blog.ty')
+
 
     print blog,'hahahahah', blog.shape
 
@@ -60,7 +64,8 @@ def graph():
             else:
                 graph[int(ls[0])] = []
         print graph
-    np.save('train.blog.graph',graph)
+    np.save('trans.blog.graph',graph)
 
+blogx()
 blogy()
-# graph()
+graph()
